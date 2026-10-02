@@ -26,3 +26,7 @@
 ## 不主张理论优越性
 
 没有在项目上识别出明确动力学、目标函数、约束和参数范围时，不推导最优控制律、能控/能观秩条件或稳定性保证。更严谨的 formal control 是未来特定子问题研究，不是本版标签。
+
+## Pilot harness integrity (D: experimental design, not source theory)
+
+The coordinator-only Codex Pilot 0.1 reuses the existing public-packet/scorer functions. The behavior is frozen source hashing, paired randomized bundles and no scoring while a recorded subject is running. Limits: cooperative lifecycle controls are not an OS sandbox; literal scanning cannot prove contextual isolation, and currently reports the required prompt/skill's `oracle` wording as a blocking conflict. Test reference: `tests/test_codex_pilot.py`, especially bundle coverage, unchanged baselines/full package, strict scan, scorer running protection, missing-response accounting and future-stage separation. None of these deterministic tests establish CPC management efficacy or independent worker execution.

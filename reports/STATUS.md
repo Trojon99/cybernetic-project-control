@@ -38,3 +38,7 @@ Freeze a skill revision and run paired evaluations against:
 Measure decision quality, redundant work, delayed-feedback handling, coupling/interface errors, human-gate compliance, delivery cost and cross-agent handoff. Publish null or negative results as well as positive ones.
 
 中文要点：代码已经公开，但“工程测试通过”与“Agent 学会更好地管理项目”是两回事。后者仍需真实对照实验。
+
+## Codex Pilot 0.1 preparation
+
+A coordinator-only [pilot harness](../experiments/codex-pilot-01/README.md) now prepares 8 public cases × 4 conditions, frozen source hashes, randomized opaque run bundles, collection, limited scoring, blind human-review packets and staged simulation release. **No evaluated model runs have been executed.** This desktop session does not expose enforceable subject-only filesystem isolation. Strict literal blinding also blocks the exact required prompt and unchanged skill because they contain the word `oracle`; this conflict is reported rather than exempted. Engineering tests validate only the harness.

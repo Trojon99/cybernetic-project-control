@@ -15,7 +15,7 @@ EXCLUDED_DIRS = {'.git', '.venv', 'venv', '__pycache__', '.pytest_cache', '.mypy
 ROOT_FILES = {'README.md','README.zh-CN.md','AGENTS.md','LICENSE','NOTICE.md','VERSION',
               'CHANGELOG.md','CONTRIBUTING.md','CODE_OF_CONDUCT.md','SECURITY.md','CITATION.cff','codemeta.json',
               'requirements.txt','requirements-dev.txt','.gitignore','.editorconfig'}
-ROOT_DIRS = {'.github','docs','evals','examples','integrations','reports','skills','tests','theory','tools'}
+ROOT_DIRS = {'.github','docs','evals','examples','experiments','integrations','reports','skills','tests','theory','tools'}
 ALLOWED_SUFFIXES = {'.md','.json','.py','.txt','.yaml','.yml','.cff'}
 
 
@@ -25,6 +25,10 @@ def include_path(relative: Path) -> bool:
     if any(p in EXCLUDED_DIRS for p in parts):return False
     if len(parts) == 1 and parts[0] not in ROOT_FILES:return False
     if len(parts) > 1 and parts[0] not in ROOT_DIRS:return False
+    if parts[:2] == ('experiments','codex-pilot-01'):
+        if relative.name in {'manifest.json','.coordinator.lock'}:return False
+        if len(parts)>2 and parts[2] in {'bundles','trajectory','results','reports'}:
+            return len(parts)==4 and parts[2] in {'results','reports'} and parts[3]=='.gitkeep'
     if parts[:2] == ('evals','runs'):return False
     if parts[:2] == ('evals','private') and parts != ('evals','private','README.md'):return False
     return (relative.suffix.lower() in ALLOWED_SUFFIXES

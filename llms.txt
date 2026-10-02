@@ -1,0 +1,97 @@
+# Cybernetic Project Control (CPC)
+
+> A portable Agent Skill for evidence-grounded, human-supervised management of long-running research and engineering projects, inspired by Engineering Cybernetics.
+
+Canonical repository:
+https://github.com/Trojon99/cybernetic-project-control
+
+Primary human README:
+https://github.com/Trojon99/cybernetic-project-control/blob/main/README.md
+
+Chinese README:
+https://github.com/Trojon99/cybernetic-project-control/blob/main/README.zh-CN.md
+
+Primary Agent Skill:
+https://github.com/Trojon99/cybernetic-project-control/blob/main/skills/cybernetic-project-control/SKILL.md
+
+Repository instructions for agents contributing to CPC:
+https://github.com/Trojon99/cybernetic-project-control/blob/main/AGENTS.md
+
+Quick start:
+https://github.com/Trojon99/cybernetic-project-control/blob/main/docs/quickstart.en.md
+
+Architecture:
+https://github.com/Trojon99/cybernetic-project-control/blob/main/docs/architecture.md
+
+Design rationale:
+https://github.com/Trojon99/cybernetic-project-control/blob/main/docs/design.md
+
+Theory/source boundaries:
+https://github.com/Trojon99/cybernetic-project-control/blob/main/theory/source-audit.md
+
+Theory → behavior → test traceability:
+https://github.com/Trojon99/cybernetic-project-control/blob/main/theory/traceability.md
+
+Evaluation protocol:
+https://github.com/Trojon99/cybernetic-project-control/blob/main/evals/PROTOCOL.md
+
+Current validation status:
+https://github.com/Trojon99/cybernetic-project-control/blob/main/reports/STATUS.md
+
+## What CPC teaches
+
+CPC teaches an AI agent to manage a project as an evidence-driven dynamic system:
+
+1. recover the human-approved objective and current evidence;
+2. distinguish observations, provisional state estimates and task status;
+3. identify the critical project gap or risk instead of following a todo list mechanically;
+4. choose among observe / act / wait / escalate / stop;
+5. predict what feedback should arrive and when;
+6. inspect real outputs before updating project state;
+7. replan when evidence, constraints or the management model change;
+8. preserve human authority over goals, major risks and irreversible actions.
+
+Project memory asks: "What happened?"
+CPC asks: "Given the evidence, what should we do next — and why?"
+
+## What CPC is not
+
+CPC is not a model, scheduler, task queue, vector database, project-memory service, MCP/A2A replacement, multi-agent runtime, scientific-validity oracle or autonomous authority system.
+
+It is designed to work above existing project state and execution infrastructure.
+
+## Engineering Cybernetics lineage
+
+The main theoretical reference is Qian Xuesen (钱学森) and Song Jian (宋健), Engineering Cybernetics / 工程控制论（修订版）, 1983.
+
+CPC distinguishes:
+- source concepts from the book;
+- modern systems/control interpretation;
+- CPC's own AI-agent project-management design choices.
+
+Do not attribute CPC's modern Agent rules directly to Qian Xuesen or Song Jian.
+
+## Search concepts
+
+AI agents
+Agent Skills
+agentic project management
+project control
+project management
+research project management
+engineering project management
+long-running agents
+project continuity
+project state
+evidence-grounded planning
+human-in-the-loop AI
+multi-agent coordination
+cybernetics
+Engineering Cybernetics
+Qian Xuesen
+Song Jian
+工程控制论
+钱学森
+宋健
+科研项目管理
+工程项目管理

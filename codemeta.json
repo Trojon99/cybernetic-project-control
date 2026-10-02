@@ -8,20 +8,35 @@
   "version": "0.1.0-alpha.1",
   "datePublished": "2026-10-02",
   "programmingLanguage": ["Markdown", "Python", "JSON Schema", "YAML"],
-  "author": [{"@type": "Person", "givenName": "Panfeng", "familyName": "Hu", "url": "https://github.com/Trojon99"}],
+  "author": [
+    {
+      "@type": "Person",
+      "givenName": "Panfeng",
+      "familyName": "Hu",
+      "url": "https://github.com/Trojon99"
+    }
+  ],
   "description": "A portable, evidence-grounded Agent Skill and project-control framework for long-running research and engineering projects, inspired by Engineering Cybernetics.",
   "keywords": [
     "AI agents",
     "Agent Skills",
     "agentic project management",
     "project control",
+    "project management",
     "research project management",
     "engineering project management",
-    "cybernetics",
-    "Engineering Cybernetics",
+    "long-running agents",
+    "project continuity",
+    "project state",
+    "evidence-grounded planning",
     "human-in-the-loop AI",
     "multi-agent coordination",
-    "long-running agents",
-    "project continuity"
+    "cybernetics",
+    "Engineering Cybernetics",
+    "Qian Xuesen",
+    "Song Jian",
+    "工程控制论",
+    "钱学森",
+    "宋健"
   ]
 }

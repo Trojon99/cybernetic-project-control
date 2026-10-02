@@ -14,17 +14,21 @@ license: MIT
 keywords:
   - AI agents
   - Agent Skills
+  - agentic project management
   - project control
   - project management
   - research project management
   - engineering project management
-  - cybernetics
-  - Engineering Cybernetics
-  - human-in-the-loop AI
-  - multi-agent systems
   - long-running agents
   - project continuity
+  - cybernetics
+  - Engineering Cybernetics
+  - Qian Xuesen
+  - Song Jian
+  - human-in-the-loop AI
+  - multi-agent systems
 abstract: >-
   A portable, evidence-grounded Agent Skill and project-control framework that
   teaches general-purpose AI agents to diagnose, prioritize, steer, evaluate and
-  replan long-running research and engineering projects under human supervision.
+  replan long-running research and engineering projects under human supervision,
+  inspired by Engineering Cybernetics.

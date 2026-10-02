@@ -1,0 +1,73 @@
+{
+  "package": "cybernetic-project-control",
+  "version": "0.1.0-alpha.1",
+  "checked_at_utc": "2026-10-02T08:37:31.244174+00:00",
+  "environment": {
+    "python": "3.13.5",
+    "platform": "Linux",
+    "jsonschema": "4.26.0",
+    "PyYAML": "6.0.3"
+  },
+  "checks": [
+    {
+      "command": "python -m unittest discover -s tests -v",
+      "exit_code": 0,
+      "tests_run": 106,
+      "duration_seconds": 8.891,
+      "failures": 0,
+      "errors": 0
+    },
+    {
+      "command": "python tools/check_repository.py",
+      "exit_code": 0,
+      "result": {
+        "status": "pass",
+        "checks": {
+          "skill_frontmatter_and_size": "pass",
+          "python_syntax": "pass",
+          "public_cases": 26,
+          "skill_lines": 116,
+          "relative_links": "checked",
+          "source_pdf_bundled": false,
+          "live_agent_evaluation": "not_run"
+        },
+        "errors": []
+      }
+    },
+    {
+      "command": "python tools/demo.py",
+      "exit_code": 0,
+      "result": {
+        "demo": "synthetic_record_loop",
+        "initial_revision": 0,
+        "final_revision": 1,
+        "first_apply": "applied",
+        "duplicate_apply": "already_applied",
+        "stale_update_rejected": true,
+        "calibration_claim": "contradicted",
+        "scientific_conclusion": "unknown",
+        "next_action": "检查校准失效覆盖范围，列出可保留与需复查的数据。",
+        "actual_agent_or_lab_run": false,
+        "source_examples_modified": false
+      }
+    }
+  ],
+  "engineering_status": "passed_local_offline_checks",
+  "public_development_cases": 26,
+  "mechanism_rules": 12,
+  "synthetic_projects": 3,
+  "skill_sha256": "aa6f48595cece63b50ee3cd742092763de719f851a4b7cf21af10266868e557b",
+  "not_run": {
+    "real_agent_efficacy": true,
+    "Hermes": true,
+    "Codex": true,
+    "Evo": true,
+    "remote_SSH": true,
+    "external_backend_integration": true,
+    "private_held_out_evaluation": true,
+    "GitHub_Actions_matrix": true,
+    "independent_audit": true
+  },
+  "publication_performed": false,
+  "limits": "These are deterministic code/package/fixture checks, not proof of agent project-management improvement, scientific validity, production security or cross-host compatibility."
+}

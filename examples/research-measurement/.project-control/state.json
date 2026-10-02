@@ -1,0 +1,15 @@
+{
+  "schema_version": "0.1",
+  "project_id": "research-measurement",
+  "revision": 0,
+  "as_of": "2026-10-02T09:00:00Z",
+  "objective": {"id":"OBJ-1","version":1,"statement":"判断一项材料响应结论是否能由有效且可追溯的测量支持，而非追求正结果。"},
+  "criteria": [{"id":"C-calibration","description":"本批次测量所依赖的校准仍然有效","category":"knowledge","status":"supported","evidence_ids":["E-old-calibration"]},{"id":"C-conclusion","description":"结论经过适用的测量与方法检查，允许否定或不确定结果","category":"knowledge","status":"unknown","evidence_ids":[]}],
+  "control": {"mode":"bounded","controller_id":"project-controller","allowed_action_classes":["inspect","local_edit","local_compute"],"max_actions":3,"actions_used":0,"invariants":["不自行修改目标、验收、预算和授权；不公开发布或删除原始数据。"]},
+  "questions": [{"id":"Q-calibration","description":"当前校准是否可靠？","blocks":["C-calibration","C-conclusion"],"status":"open","evidence_ids":[]},{"id":"Q-reuse","description":"哪些旧观测需要重查，哪些可保留？","blocks":["C-conclusion"],"status":"open","evidence_ids":[]}],
+  "evidence": [{"id":"E-old-calibration","summary":"先前校准报告，仅对其适用范围有效。","observed_at":"2026-10-02T08:00:00Z","objective_version":1,"targets":["C-calibration"],"relation":"supports","validity":"current","validity_reason":null,"review_status":"reviewed","reviewer":"fixture-author","review_note":"合成 fixture 的已知内容；不是独立真实研究验证。","limitations":["仅用于软件/行为测试；不是现实结果。"],"provenance":{"producer":"synthetic-fixture","run_ref":"fixture-run-1","input_ref":"fixture-input-v1"},"artifacts":[{"path":"artifacts/old-calibration.txt","sha256":"605549455857bab9cd88fd1644ee41c5515a15a994ebc29027011594ddee2eeb"}],"depends_on":[]}],
+  "pending_effects": [],
+  "decisions": [],
+  "handoff": {"summary":"已有测量结果，但最新校准复查尚未合并。","next_action":"先核对最新校准报告，决定是否还能使用先前依据。","open_risks":["尚未完成全部验收。"],"do_not_repeat":["不要为获得正结果自动删掉异常数据。"]},
+  "history": []
+}

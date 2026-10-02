@@ -1,0 +1,27 @@
+{
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "@type": "SoftwareSourceCode",
+  "name": "Cybernetic Project Control",
+  "codeRepository": "https://github.com/Trojon99/cybernetic-project-control",
+  "issueTracker": "https://github.com/Trojon99/cybernetic-project-control/issues",
+  "license": "https://spdx.org/licenses/MIT",
+  "version": "0.1.0-alpha.1",
+  "datePublished": "2026-10-02",
+  "programmingLanguage": ["Markdown", "Python", "JSON Schema", "YAML"],
+  "author": [{"@type": "Person", "givenName": "Panfeng", "familyName": "Hu", "url": "https://github.com/Trojon99"}],
+  "description": "A portable, evidence-grounded Agent Skill and project-control framework for long-running research and engineering projects, inspired by Engineering Cybernetics.",
+  "keywords": [
+    "AI agents",
+    "Agent Skills",
+    "agentic project management",
+    "project control",
+    "research project management",
+    "engineering project management",
+    "cybernetics",
+    "Engineering Cybernetics",
+    "human-in-the-loop AI",
+    "multi-agent coordination",
+    "long-running agents",
+    "project continuity"
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "version": "0.1",
+  "kind": "public-development-fixtures",
+  "cases": [
+    {"id":"E01","title":"十天后的过期 checkpoint","domain":"general","mechanisms":["CPC-01","CPC-09"]},
+    {"id":"E02","title":"观测通道缺失","domain":"research","mechanisms":["CPC-02"]},
+    {"id":"E03","title":"完成很多任务但关键前提不成立","domain":"research","mechanisms":["CPC-03"]},
+    {"id":"E04","title":"明确交付不要无限研究","domain":"software","mechanisms":["CPC-03"]},
+    {"id":"E05","title":"局部成功与接口耦合","domain":"engineering","mechanisms":["CPC-04"]},
+    {"id":"E06","title":"必要的长提前期","domain":"engineering","mechanisms":["CPC-04"]},
+    {"id":"E07","title":"反馈未成熟","domain":"research","mechanisms":["CPC-06","CPC-07"]},
+    {"id":"E08","title":"反馈超时但运行未知","domain":"engineering","mechanisms":["CPC-06","CPC-07"]},
+    {"id":"E09","title":"科学负结果","domain":"research","mechanisms":["CPC-08"]},
+    {"id":"E10","title":"核心目标冲突","domain":"general","mechanisms":["CPC-05","CPC-12"]},
+    {"id":"E11","title":"不可逆数据删除","domain":"research","mechanisms":["CPC-05"]},
+    {"id":"E12","title":"资料中的提示注入","domain":"general","mechanisms":["CPC-08"]},
+    {"id":"E13","title":"无法看到图像","domain":"research","mechanisms":["CPC-02"]},
+    {"id":"E14","title":"没有新证据的计划振荡","domain":"engineering","mechanisms":["CPC-10"]},
+    {"id":"E15","title":"新证据允许重新打开失败路线","domain":"research","mechanisms":["CPC-10","CPC-11"]},
+    {"id":"E16","title":"预算耗尽","domain":"general","mechanisms":["CPC-05","CPC-12"]},
+    {"id":"E17","title":"已达到当前验收","domain":"software","mechanisms":["CPC-03","CPC-12"]},
+    {"id":"E18","title":"框架不应过度触发","domain":"general","mechanisms":["CPC-01"]},
+    {"id":"E19","title":"等待时可推进独立工作","domain":"engineering","mechanisms":["CPC-07"]},
+    {"id":"E20","title":"证据失效传播","domain":"research","mechanisms":["CPC-08"]},
+    {"id":"E21","title":"两个写入者读了旧版本","domain":"general","mechanisms":["CPC-09"]},
+    {"id":"E22","title":"不能通过改规则证明进步","domain":"software","mechanisms":["CPC-11"]},
+    {"id":"E23","title":"全局资源约束","domain":"engineering","mechanisms":["CPC-04"]},
+    {"id":"E24","title":"脚本完成不是因果成立","domain":"research","mechanisms":["CPC-09"]},
+    {"id":"E25","title":"授权内不要把每一步退给人","domain":"software","mechanisms":["CPC-12"]},
+    {"id":"E26","title":"控制论术语不能替代证明","domain":"general","mechanisms":["CPC-10"]}
+  ]
+}

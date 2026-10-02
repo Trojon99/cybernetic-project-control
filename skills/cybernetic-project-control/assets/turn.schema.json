@@ -1,0 +1,30 @@
+{
+  "type":"object",
+  "properties":{
+    "schema_version":{"const":"0.1"},
+    "id":{"type":"string","pattern":"^T-[A-Za-z0-9][A-Za-z0-9._-]*$","maxLength":100},
+    "project_id":{"type":"string","minLength":1,"maxLength":500},
+    "base_revision":{"type":"integer","minimum":0},
+    "objective_version":{"type":"integer","minimum":1},
+    "actor":{"type":"string","minLength":1,"maxLength":500},
+    "created_at":{"type":"string","format":"date-time"},
+    "mode":{"enum":["observe","act","wait","escalate","stop"]},
+    "action_class":{"enum":["none","inspect","local_edit","local_compute","objective_change","publish","external_write","delete_data","physical_actuation","accept_risk","permissions_change"]},
+    "target_questions":{"type":"array","items":{"type":"string","pattern":"^Q-[A-Za-z0-9][A-Za-z0-9._-]*$","maxLength":100},"minItems":0,"uniqueItems":true},
+    "diagnosis":{"type":"object","properties":{"bottleneck":{"type":"string","minLength":1,"maxLength":10000},"evidence_ids":{"type":"array","items":{"type":"string","pattern":"^E-[A-Za-z0-9][A-Za-z0-9._-]*$","maxLength":100},"minItems":0,"uniqueItems":true},"unknowns":{"type":"array","items":{"type":"string","minLength":1,"maxLength":10000},"minItems":0}},"required":["bottleneck","evidence_ids","unknowns"],"additionalProperties":false},
+    "selection":{"type":"object","properties":{"chosen":{"type":"string","minLength":1,"maxLength":10000},"alternatives":{"type":"array","items":{"type":"object","properties":{"action":{"type":"string","minLength":1,"maxLength":10000},"why_not":{"type":"string","minLength":1,"maxLength":10000}},"required":["action","why_not"],"additionalProperties":false},"minItems":1},"expected_signal":{"type":"string","minLength":1,"maxLength":10000},"if_observed":{"type":"string","minLength":1,"maxLength":10000},"if_not_observed":{"type":"string","minLength":1,"maxLength":10000},"stop_condition":{"type":"string","minLength":1,"maxLength":10000}},"required":["chosen","alternatives","expected_signal","if_observed","if_not_observed","stop_condition"],"additionalProperties":false},
+    "result":{"type":"object","properties":{"status":{"enum":["not_run","reported","checked","inconclusive","failed"]},"summary":{"type":"string","minLength":1,"maxLength":10000},"evidence_ids":{"type":"array","items":{"type":"string","pattern":"^E-[A-Za-z0-9][A-Za-z0-9._-]*$","maxLength":100},"minItems":0,"uniqueItems":true}},"required":["status","summary","evidence_ids"],"additionalProperties":false},
+    "add_evidence":{"type":"array","items":{"$ref":"urn:cpc:state:0.1#/$defs/evidence"},"minItems":0},
+    "invalidate_evidence":{"type":"array","items":{"type":"object","properties":{"id":{"type":"string","pattern":"^E-[A-Za-z0-9][A-Za-z0-9._-]*$","maxLength":100},"reason":{"type":"string","minLength":1,"maxLength":10000}},"required":["id","reason"],"additionalProperties":false},"minItems":0},
+    "criterion_updates":{"type":"array","items":{"type":"object","properties":{"id":{"type":"string","pattern":"^C-[A-Za-z0-9][A-Za-z0-9._-]*$","maxLength":100},"status":{"enum":["unknown","supported","contradicted"]},"evidence_ids":{"type":"array","items":{"type":"string","pattern":"^E-[A-Za-z0-9][A-Za-z0-9._-]*$","maxLength":100},"minItems":0,"uniqueItems":true}},"required":["id","status","evidence_ids"],"additionalProperties":false},"minItems":0},
+    "question_updates":{"type":"array","items":{"type":"object","properties":{"id":{"type":"string","pattern":"^Q-[A-Za-z0-9][A-Za-z0-9._-]*$","maxLength":100},"status":{"enum":["open","resolved"]},"evidence_ids":{"type":"array","items":{"type":"string","pattern":"^E-[A-Za-z0-9][A-Za-z0-9._-]*$","maxLength":100},"minItems":0,"uniqueItems":true}},"required":["id","status","evidence_ids"],"additionalProperties":false},"minItems":0},
+    "pending_updates":{"type":"array","items":{"$ref":"urn:cpc:state:0.1#/$defs/pending"},"minItems":0},
+    "add_decisions":{"type":"array","items":{"$ref":"urn:cpc:state:0.1#/$defs/decision"},"minItems":0},
+    "handoff":{"$ref":"urn:cpc:state:0.1#/$defs/handoff"}
+  },
+  "required":["schema_version","id","project_id","base_revision","objective_version","actor","created_at","mode","action_class","target_questions","diagnosis","selection","result","add_evidence","invalidate_evidence","criterion_updates","question_updates","pending_updates","add_decisions","handoff"],
+  "additionalProperties":false,
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"urn:cpc:turn:0.1",
+  "title":"CPC 0.1 management turn proposal/receipt"
+}

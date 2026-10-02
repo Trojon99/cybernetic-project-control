@@ -1,0 +1,3 @@
+SYNTHETIC FIXTURE
+Nine modules pass their unit checks.
+Unit checks do not cover protocol compatibility or full-system validation.

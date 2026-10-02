@@ -1,0 +1,35 @@
+name: Evaluation result
+description: Report a CPC evaluation, including failures or null results.
+title: "[Eval]: "
+body:
+  - type: input
+    id: model
+    attributes:
+      label: Agent host / model / version
+    validations:
+      required: true
+  - type: input
+    id: cpc
+    attributes:
+      label: CPC commit / release
+    validations:
+      required: true
+  - type: textarea
+    id: setup
+    attributes:
+      label: Evaluation setup
+      description: Tasks, baselines, tools, budgets, ordering/randomization, and human interventions.
+    validations:
+      required: true
+  - type: textarea
+    id: results
+    attributes:
+      label: Results
+      description: Include task-level outcomes, failures, timeouts, and raw/sanitized artifacts when possible.
+    validations:
+      required: true
+  - type: textarea
+    id: limits
+    attributes:
+      label: Limitations
+      description: What should not be concluded from this run?

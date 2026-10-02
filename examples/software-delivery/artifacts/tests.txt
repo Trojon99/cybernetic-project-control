@@ -1,0 +1,3 @@
+SYNTHETIC FIXTURE
+Demo revision v1: all specified tests passed.
+Acceptance requires a run guide; no extra feature discovery is requested.

@@ -1,0 +1,21 @@
+{
+  "schema_version": "0.1",
+  "project_id": "sample-project",
+  "revision": 0,
+  "as_of": "2026-10-02T00:00:00Z",
+  "objective": {
+    "id": "OBJ-1",
+    "version": 1,
+    "statement": "待用户确认的具体项目目标"
+  },
+  "criteria": [
+    {"id":"C-1","description":"待用户确认的可检查验收条件","category":"delivery","status":"unknown","evidence_ids":[]}
+  ],
+  "control": {"mode":"advisory","controller_id":"project-controller","allowed_action_classes":["inspect"],"max_actions":3,"actions_used":0,"invariants":["不自行修改目标、验收、预算和授权；不公开发布或删除原始数据。"]},
+  "questions": [],
+  "evidence": [],
+  "pending_effects": [],
+  "decisions": [],
+  "handoff": {"summary":"这是待填充模板，不代表已经观察过真实项目。","next_action":"只读检查目标项目，确认目标和权威记录。","open_risks":["目标/验收尚未确认。"],"do_not_repeat":[]},
+  "history": []
+}

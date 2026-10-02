@@ -1,0 +1,39 @@
+name: Bug report
+description: Report a reproducible defect in CPC, its tools, schemas, examples, or documentation.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "Please remove private project data and credentials before submitting."
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Describe the defect and the expected behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction
+      description: Minimal steps, files, or commands needed to reproduce the problem.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: CPC version or commit
+      placeholder: 0.1.0-alpha.1 or commit SHA
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Python, agent host/model if relevant.
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Logs / evidence
+      description: Paste sanitized logs or link to a minimal reproduction.

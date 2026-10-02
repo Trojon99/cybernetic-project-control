@@ -1,0 +1,3 @@
+SYNTHETIC FIXTURE
+Calibration v1 was accepted on day 1.
+Subsequent checks may invalidate this range.

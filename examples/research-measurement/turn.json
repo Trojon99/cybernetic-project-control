@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.1",
+  "id": "T-check-calibration",
+  "project_id": "research-measurement",
+  "base_revision": 0,
+  "objective_version": 1,
+  "actor": "project-controller",
+  "created_at": "2026-10-02T10:00:00Z",
+  "mode": "observe",
+  "action_class": "inspect",
+  "target_questions": ["Q-calibration"],
+  "diagnosis": {"bottleneck":"测量可靠性，而非结果数量。","evidence_ids":["E-old-calibration","E-new-calibration"],"unknowns":["哪些旧数据仍可保留。"]},
+  "selection": {"chosen":"核对最新校准报告，撤回受影响的旧依据，并调整下一步。","alternatives":[{"action":"马上扩展样本","why_not":"测量前提尚有缺陷，额外样本未必提供有效证据。"},{"action":"删除旧数据重做全部实验","why_not":"不可逆且尚未评估受影响范围。"}],"expected_signal":"最新校准报告说明旧校准是否适用。","if_observed":"若明确失效，则降低受影响结论并检查数据范围。","if_not_observed":"保留矛盾，先补校准证据。","stop_condition":"本轮只接受校准核对，不执行数据删除或全面重测。"},
+  "result": {"status":"checked","summary":"新报告与旧校准适用性不一致；保留运行事实，更新校准判断。","evidence_ids":["E-new-calibration"]},
+  "add_evidence": [{"id":"E-new-calibration","summary":"本批次的新校准检查明确使旧校准依据不再适用。","observed_at":"2026-10-02T08:00:00Z","objective_version":1,"targets":["C-calibration","Q-calibration"],"relation":"contradicts","validity":"current","validity_reason":null,"review_status":"reviewed","reviewer":"fixture-author","review_note":"合成 fixture 的已知内容；不是独立真实研究验证。","limitations":["仅用于软件/行为测试；不是现实结果。"],"provenance":{"producer":"synthetic-fixture","run_ref":"fixture-run-1","input_ref":"fixture-input-v1"},"artifacts":[{"path":"artifacts/calibration-check.txt","sha256":"39623ee0d0eac68cef8886008af99c6548673e86ddc60deb5bab3d8387c0cb11"}],"depends_on":[]}],
+  "invalidate_evidence": [{"id":"E-old-calibration","reason":"新报告明确失效的是同一批次校准 v1；不删除历史事实。"}],
+  "criterion_updates": [{"id":"C-calibration","status":"contradicted","evidence_ids":["E-new-calibration"]}],
+  "question_updates": [{"id":"Q-calibration","status":"resolved","evidence_ids":["E-new-calibration"]}],
+  "pending_updates": [],
+  "add_decisions": [{"id":"D-check-scope","summary":"暂停扩展样本，先确定测量失效范围。","rationale":"校准是最终结论的上游必要条件。","alternatives":["继续加样本","全部删除重做"],"evidence_ids":["E-new-calibration"],"revisit_when":"获得受影响范围与可恢复性证据后。","supersedes":null}],
+  "handoff": {"summary":"校准可靠性主张已被反证；原始测量未删除，最终科学结论仍 unknown。","next_action":"检查校准失效覆盖范围，列出可保留与需复查的数据。","open_risks":["受影响范围未确定。"],"do_not_repeat":["不要把校准失败当作理论假说已被否定。","不要为追求正结果删数据。"]}
+}

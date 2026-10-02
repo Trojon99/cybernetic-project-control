@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "If you use Cybernetic Project Control in research, please cite this software."
+title: "Cybernetic Project Control"
+type: software
+version: "0.1.0-alpha.1"
+date-released: 2026-10-02
+authors:
+  - family-names: "Hu"
+    given-names: "Panfeng"
+    alias: "Trojon99"
+repository-code: "https://github.com/Trojon99/cybernetic-project-control"
+url: "https://github.com/Trojon99/cybernetic-project-control"
+license: MIT
+keywords:
+  - AI agents
+  - Agent Skills
+  - project control
+  - project management
+  - research project management
+  - engineering project management
+  - cybernetics
+  - Engineering Cybernetics
+  - human-in-the-loop AI
+  - multi-agent systems
+  - long-running agents
+  - project continuity
+abstract: >-
+  A portable, evidence-grounded Agent Skill and project-control framework that
+  teaches general-purpose AI agents to diagnose, prioritize, steer, evaluate and
+  replan long-running research and engineering projects under human supervision.

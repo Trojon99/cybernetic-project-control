@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.1",
+  "id": "T-draft",
+  "project_id": "sample-project",
+  "base_revision": 0,
+  "objective_version": 1,
+  "actor": "project-controller",
+  "created_at": "2026-10-02T00:00:00Z",
+  "mode": "escalate",
+  "action_class": "none",
+  "target_questions": [],
+  "diagnosis": {"bottleneck":"尚未取得项目材料或确认目标。","evidence_ids":[],"unknowns":["项目范围、验收和权限。"]},
+  "selection": {"chosen":"请所有者确认目标与最低必要资料。","alternatives":[{"action":"直接开始执行","why_not":"缺少目标和范围，无法判断行动是否获授权。"}],"expected_signal":"用户确认目标、资料位置和边界。","if_observed":"只读恢复实际状态，再提出一个有界动作。","if_not_observed":"保持建议模式，不进行项目写入或计算。","stop_condition":"收到用户决定前不执行。"},
+  "result": {"status":"not_run","summary":"本记录只是模板，没有执行实际工作。","evidence_ids":[]},
+  "add_evidence": [],
+  "invalidate_evidence": [],
+  "criterion_updates": [],
+  "question_updates": [],
+  "pending_updates": [],
+  "add_decisions": [],
+  "handoff": {"summary":"这是待填充模板，不代表已经观察过真实项目。","next_action":"只读检查目标项目，确认目标和权威记录。","open_risks":["目标/验收尚未确认。"],"do_not_repeat":[]}
+}

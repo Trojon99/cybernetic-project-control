@@ -1,0 +1,22 @@
+{
+  "schema_version": "0.1",
+  "id": "T-write-guide",
+  "project_id": "software-delivery",
+  "base_revision": 0,
+  "objective_version": 1,
+  "actor": "project-controller",
+  "created_at": "2026-10-02T10:00:00Z",
+  "mode": "act",
+  "action_class": "local_edit",
+  "target_questions": ["Q-guide"],
+  "diagnosis": {"bottleneck":"明确的交付说明缺口，不是需要更多信息的研究问题。","evidence_ids":["E-tests"],"unknowns":[]},
+  "selection": {"chosen":"编写并核对当前演示说明。","alternatives":[{"action":"再调查其他框架","why_not":"不会改变当前已明确的交付要求。"}],"expected_signal":"出现与演示范围一致的运行说明。","if_observed":"记录已完成当前交付，不扩展需求。","if_not_observed":"修复说明遗漏，不改验收。","stop_condition":"本地交付内容达到约定后停止；不生产发布。"},
+  "result": {"status":"checked","summary":"运行说明已检查；当前演示的记录层验收已满足。","evidence_ids":["E-guide"]},
+  "add_evidence": [{"id":"E-guide","summary":"演示交付包中的运行说明与该合成示例范围一致。","observed_at":"2026-10-02T08:00:00Z","objective_version":1,"targets":["C-guide","Q-guide"],"relation":"supports","validity":"current","validity_reason":null,"review_status":"reviewed","reviewer":"fixture-author","review_note":"合成 fixture 的已知内容；不是独立真实研究验证。","limitations":["仅用于软件/行为测试；不是现实结果。"],"provenance":{"producer":"synthetic-fixture","run_ref":"fixture-run-1","input_ref":"fixture-input-v1"},"artifacts":[{"path":"artifacts/run-guide.md","sha256":"3d40e35a1ee61dfc70f30bd164041a9a114defc5d95dfda5665dbb9b488bce55"}],"depends_on":[]}],
+  "invalidate_evidence": [],
+  "criterion_updates": [{"id":"C-guide","status":"supported","evidence_ids":["E-guide"]}],
+  "question_updates": [{"id":"Q-guide","status":"resolved","evidence_ids":["E-guide"]}],
+  "pending_updates": [],
+  "add_decisions": [],
+  "handoff": {"summary":"合成演示约定的两个条件已满足。","next_action":"停止扩展，交由所有者审查交付包；不自动发布。","open_risks":[],"do_not_repeat":["不要额外发明功能或强制启动新研究。"]}
+}

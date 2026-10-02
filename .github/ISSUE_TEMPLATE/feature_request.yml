@@ -1,0 +1,29 @@
+name: Feature request
+description: Propose a project-control rule, integration, profile, or tooling improvement.
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: failure
+    attributes:
+      label: What real project-management failure does this address?
+      description: Start with the observed failure mode, not a control-theory term.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: What should an agent do differently?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Existing mechanisms / alternatives
+      description: Could an existing CPC rule, Agent Skill, LoopX, project-state tool, or host feature already solve this?
+  - type: textarea
+    id: evaluation
+    attributes:
+      label: How would we test it?
+      description: Suggest a reproducible case or trajectory and a meaningful baseline.

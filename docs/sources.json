@@ -1,0 +1,106 @@
+{
+  "retrieval_date": "2026-10-02",
+  "limits": "Web views of mutable pages; no upstream source execution; GitHub API commit pinning unavailable in build environment. No claims of exhaustive novelty search.",
+  "sources": [
+    {
+      "id": "B1",
+      "type": "book",
+      "title": "工程控制论（修订版），上、下册",
+      "authors": [
+        "钱学森",
+        "宋健"
+      ],
+      "publisher": "科学出版社",
+      "year": 1983,
+      "access": "user_supplied_scan",
+      "pdf_pages": 1100,
+      "sha256": "d8c56c2d424ae7f8d5cfcf9c92cb691f1c20072170d0bb607998096c3eb58295",
+      "verification": "TOC plus selected pages visually inspected; not a full-text re-audit",
+      "redistributed": false,
+      "access_date": "2026-10-02",
+      "commit_sha": null
+    },
+    {
+      "id": "S1",
+      "title": "Agent Skills specification",
+      "url": "https://agentskills.io/specification",
+      "type": "primary_specification",
+      "access_date": "2026-10-02",
+      "verification": "primary documentation viewed",
+      "commit_sha": null
+    },
+    {
+      "id": "S2",
+      "title": "AGENTS.md",
+      "url": "https://agents.md/",
+      "type": "primary_specification",
+      "access_date": "2026-10-02",
+      "verification": "primary documentation viewed",
+      "commit_sha": null
+    },
+    {
+      "id": "S3",
+      "title": "JSON Schema Draft 2020-12",
+      "url": "https://json-schema.org/draft/2020-12",
+      "type": "schema_standard",
+      "verification": "schema dialect used; specification details not independently audited this turn",
+      "access_date": "2026-10-02",
+      "commit_sha": null
+    },
+    {
+      "id": "R1",
+      "title": "Agentic Project Management",
+      "url": "https://github.com/sdi2200262/agentic-project-management",
+      "type": "primary_repository",
+      "verification": "README and templates listing viewed; not executed",
+      "access_date": "2026-10-02",
+      "commit_sha": null
+    },
+    {
+      "id": "R2",
+      "title": "LoopX",
+      "url": "https://github.com/loopx-project/loopx",
+      "type": "primary_repository",
+      "verification": "repository README fetched through indexed web result; not executed",
+      "access_date": "2026-10-02",
+      "commit_sha": null
+    },
+    {
+      "id": "R3",
+      "title": "Project State Governor",
+      "url": "https://github.com/Ghost011118/project-state-governor/blob/main/SKILL.md",
+      "type": "primary_repository",
+      "verification": "SKILL and README viewed; not executed",
+      "access_date": "2026-10-02",
+      "commit_sha": null
+    },
+    {
+      "id": "R4",
+      "title": "Engineering Cybernetics Governance",
+      "url": "https://github.com/Springwonder/engineering-cybernetics-governance/blob/main/SKILL.md",
+      "type": "primary_repository",
+      "verification": "SKILL and README viewed; not executed",
+      "access_date": "2026-10-02",
+      "commit_sha": null
+    },
+    {
+      "id": "H1",
+      "title": "Hermes official skills documentation",
+      "url": "https://github.com/NousResearch/hermes-agent/blob/main/website/docs/user-guide/features/skills.md",
+      "type": "host_documentation",
+      "access_date": "2026-10-02",
+      "verification": "primary documentation viewed",
+      "commit_sha": null
+    },
+    {
+      "id": "H2",
+      "title": "OpenAI Codex skills documentation",
+      "url": "https://developers.openai.com/codex/skills/",
+      "resolved_url": "https://learn.chatgpt.com/docs/build-skills",
+      "type": "host_documentation",
+      "access_date": "2026-10-02",
+      "verification": "primary documentation viewed",
+      "commit_sha": null
+    }
+  ]
+}

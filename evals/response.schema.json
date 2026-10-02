@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["selected_action","mode","evidence_ids","rationale","expected_feedback","contingency","human_question"],
+  "properties": {
+    "selected_action": {"type":"string","minLength":1},
+    "mode": {"enum":["observe","act","wait","escalate","stop"]},
+    "evidence_ids": {"type":"array","items":{"type":"string"},"uniqueItems":true},
+    "rationale": {"type":"string","minLength":10},
+    "expected_feedback": {"type":"string","minLength":5},
+    "contingency": {"type":"string","minLength":5},
+    "human_question": {"type":["string","null"]}
+  },
+  "allOf": [{"if":{"properties":{"mode":{"const":"escalate"}}},"then":{"properties":{"human_question":{"type":"string","minLength":5}}}}]
+}

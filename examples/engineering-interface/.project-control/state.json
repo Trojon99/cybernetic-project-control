@@ -1,0 +1,15 @@
+{
+  "schema_version": "0.1",
+  "project_id": "engineering-interface",
+  "revision": 0,
+  "as_of": "2026-10-02T09:00:00Z",
+  "objective": {"id":"OBJ-1","version":1,"statement":"交付符合接口和系统验证要求的装置演示；不操作真实设备。"},
+  "criteria": [{"id":"C-modules","description":"当前模块单元测试符合约定","category":"delivery","status":"supported","evidence_ids":["E-unit"]},{"id":"C-interface","description":"系统集成接口兼容","category":"delivery","status":"contradicted","evidence_ids":["E-interface"]},{"id":"C-system","description":"系统级验证在约定条件下完成","category":"safety","status":"unknown","evidence_ids":[]}],
+  "control": {"mode":"bounded","controller_id":"project-controller","allowed_action_classes":["inspect","local_edit","local_compute"],"max_actions":3,"actions_used":0,"invariants":["不自行修改目标、验收、预算和授权；不公开发布或删除原始数据。"]},
+  "questions": [{"id":"Q-interface","description":"模块之间的接口是否一致？","blocks":["C-interface"],"status":"resolved","evidence_ids":["E-interface"]},{"id":"Q-system","description":"系统验证反馈是否已经到达？","blocks":["C-system"],"status":"open","evidence_ids":[]}],
+  "evidence": [{"id":"E-unit","summary":"模块单元检查通过，不覆盖接口或系统安全。","observed_at":"2026-10-02T08:00:00Z","objective_version":1,"targets":["C-modules"],"relation":"supports","validity":"current","validity_reason":null,"review_status":"reviewed","reviewer":"fixture-author","review_note":"合成 fixture 的已知内容；不是独立真实研究验证。","limitations":["仅用于软件/行为测试；不是现实结果。"],"provenance":{"producer":"synthetic-fixture","run_ref":"fixture-run-1","input_ref":"fixture-input-v1"},"artifacts":[{"path":"artifacts/unit-test.txt","sha256":"56ce6366372bc58bcb15f55e9609b2cfebfe27e664ba4c2b18f27d2bda330e75"}],"depends_on":[]},{"id":"E-interface","summary":"接口单位不一致。","observed_at":"2026-10-02T08:00:00Z","objective_version":1,"targets":["C-interface","Q-interface"],"relation":"contradicts","validity":"current","validity_reason":null,"review_status":"reviewed","reviewer":"fixture-author","review_note":"合成 fixture 的已知内容；不是独立真实研究验证。","limitations":["仅用于软件/行为测试；不是现实结果。"],"provenance":{"producer":"synthetic-fixture","run_ref":"fixture-run-1","input_ref":"fixture-input-v1"},"artifacts":[{"path":"artifacts/interface.txt","sha256":"ccee2670cb2f818395243e6240b6ecfc115c3bef2b8f2295d1faec583de360ea"}],"depends_on":[]}],
+  "pending_effects": [{"id":"P-system","description":"已有离线系统模拟等待结果","task_ref":"synthetic-job-42","owner":"simulation-worker","expected_at":"2026-10-03T09:00:00Z","timeout_at":"2026-10-03T11:00:00Z","status":"waiting"}],
+  "decisions": [],
+  "handoff": {"summary":"模块已通过，但接口单位不一致；系统模拟还在等待。","next_action":"先协调接口单位和受影响验证；不得因九个模块完成就宣布交付。","open_risks":["接口不匹配","系统模拟尚未成熟"],"do_not_repeat":["不要重复启动已有模拟 job-42。","不要依据单元测试直接操作真实设备。"]},
+  "history": []
+}

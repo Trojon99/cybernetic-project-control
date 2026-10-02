@@ -1,0 +1,15 @@
+{
+  "schema_version": "0.1",
+  "project_id": "software-delivery",
+  "revision": 0,
+  "as_of": "2026-10-02T09:00:00Z",
+  "objective": {"id":"OBJ-1","version":1,"statement":"完成一个已通过核心测试的本地演示交付包，不做生产发布。"},
+  "criteria": [{"id":"C-tests","description":"当前演示版本的既有测试已完成","category":"delivery","status":"supported","evidence_ids":["E-tests"]},{"id":"C-guide","description":"交付包包含与当前演示匹配的运行说明","category":"delivery","status":"unknown","evidence_ids":[]}],
+  "control": {"mode":"bounded","controller_id":"project-controller","allowed_action_classes":["inspect","local_edit","local_compute"],"max_actions":3,"actions_used":0,"invariants":["不自行修改目标、验收、预算和授权；不公开发布或删除原始数据。"]},
+  "questions": [{"id":"Q-guide","description":"是否已经提供当前版本的运行说明？","blocks":["C-guide"],"status":"open","evidence_ids":[]}],
+  "evidence": [{"id":"E-tests","summary":"指定测试已完成，剩余工作是交付说明。","observed_at":"2026-10-02T08:00:00Z","objective_version":1,"targets":["C-tests"],"relation":"supports","validity":"current","validity_reason":null,"review_status":"reviewed","reviewer":"fixture-author","review_note":"合成 fixture 的已知内容；不是独立真实研究验证。","limitations":["仅用于软件/行为测试；不是现实结果。"],"provenance":{"producer":"synthetic-fixture","run_ref":"fixture-run-1","input_ref":"fixture-input-v1"},"artifacts":[{"path":"artifacts/tests.txt","sha256":"802b15143c76b47d4cb82cd8f68f871b96daaee3d41c309261157f1a985171c0"}],"depends_on":[]}],
+  "pending_effects": [],
+  "decisions": [],
+  "handoff": {"summary":"核心检查已完成，明确缺少运行说明。","next_action":"编写并核对运行说明，不重新开展无关需求研究。","open_risks":[],"do_not_repeat":["不把研究更多框架当作延迟交付的理由。"]},
+  "history": []
+}

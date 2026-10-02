@@ -1,0 +1,4 @@
+SYNTHETIC FIXTURE
+Reference standard deviation exceeds the agreed calibration bound.
+The new check explicitly invalidates calibration v1 for this batch.
+Assess affected observations before deciding what to repeat.

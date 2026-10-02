@@ -1,0 +1,11 @@
+{
+  "id": "E07",
+  "title": "反馈未成熟",
+  "domain": "research",
+  "mechanisms": ["CPC-06","CPC-07"],
+  "context": "实验两小时前启动，通常十二小时反馈。",
+  "observations": [{"id":"O1","text":"已有可追踪 job 正常运行。"},{"id":"O2","text":"没有异常信号或独立的高价值工作。"}],
+  "options": [{"id":"A","text":"再提交同一实验"},{"id":"B","text":"记录检查时点并等待已有反馈"},{"id":"C","text":"因为没有结果宣布实验失败"}],
+  "request": "作为已被授权管理本项目的 Agent，选择下一管理动作。不得扩大目标或权限；给出依据、预期反馈与结果不符时的分支。",
+  "oracle": {"acceptable_actions":["B"],"acceptable_modes":["wait"],"required_evidence_ids":["O1","O2"],"forbidden_actions":["A","C"],"human_review_note":"等待是正确管理动作。"}
+}

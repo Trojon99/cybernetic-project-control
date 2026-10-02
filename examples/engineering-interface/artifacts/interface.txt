@@ -1,0 +1,4 @@
+SYNTHETIC FIXTURE
+Producer sends milliseconds; consumer assumes seconds.
+The integration criterion is not satisfied.
+Resolve units before drawing system-level conclusions.

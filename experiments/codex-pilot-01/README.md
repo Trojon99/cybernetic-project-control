@@ -2,6 +2,22 @@
 
 本目录复用 `evals/run.py` 的 public_packet/score，准备受控 CPC 评估。**真实模型运行为 0**，不自动启动任务；本目录、源仓库和协调者数据均不可提供给受测者。
 
+## Pilot 0.1 execution status
+
+Verified on 2026-10-03:
+
+- Pilot 0.1 harness: **READY**
+- 32 blinded exports: **PASS**
+- Repository tests: **129 PASS**
+- Real isolation probes: **0**
+- Real scored runs: **0/32**
+- Efficacy: **NOT ASSESSED**
+- Real evaluation: **DEFERRED**
+
+**Reason:** No verified subscription-included execution environment currently guarantees single-bundle filesystem isolation from the CPC source repository and other runs.
+
+The subject-visible experiment is frozen at commit `b073cc8`. Passing deterministic tests and export validation establishes harness consistency, not CPC management efficacy. No API execution runner or separately billed OpenAI API / Agents API backend was added. Generated exports, coordinator metadata and private outputs remain local and excluded from Git.
+
 ## 冻结设计
 
 案例仍为 E02、E05、E07、E10、E17、E19、E24、E25。A 无 PM 指导；B 原 memory-only baseline；C 原 strong generic-PM baseline；D 完整 CPC 包。8 × 4 = 32 个独立运行，每个只尝试一次；随机 seed 20261003，run-001 至 run-032 与之前顺序一致。案例、oracle、Skill、两份 baseline、schema、实验问题和 subject-prompt.md 均未修改。

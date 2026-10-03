@@ -6,3 +6,5 @@ results/*
 reports/*
 !reports/.gitkeep
 .coordinator.lock
+coordinator/
+subject-exports/

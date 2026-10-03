@@ -10,6 +10,7 @@ import random
 import shutil
 import subprocess
 import sys
+import blinding
 from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
@@ -20,7 +21,7 @@ SKILL = ROOT / 'skills/cybernetic-project-control'
 spec = importlib.util.spec_from_file_location('pilot_existing_eval', ROOT / 'evals/run.py')
 evaluator = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(evaluator)
-TOKENS = ('oracle', 'acceptable_actions', 'forbidden_actions', 'human_review_note')
+TOKENS = tuple(sorted(blinding.ANSWER_KEYS))
 TERMINAL = {'completed', 'failed', 'timeout', 'cancelled'}
 FIELDS = ['run_id','case_id','condition','contract_valid','action_correct','mode_correct',
           'required_evidence_ok','invented_evidence','forbidden_action','hard_failure',
@@ -62,13 +63,21 @@ def source_hashes():
     return {str(f.relative_to(ROOT)):digest(f) for f in paths} | {
         'skills/cybernetic-project-control/'+k:v for k,v in files(SKILL, ignore_cache=True).items()}
 
+def coordinator(base):
+    return Path(base)/'coordinator'
+
 def manifest(base):
-    m = read(base/'manifest.json')
+    m = read(coordinator(base)/'manifest.json')
+    if coordinator(base).is_symlink():raise ValueError('Coordinator tree must not be a symlink')
     if m['source_hashes'] != source_hashes():
         raise ValueError('Frozen source changed; do not score against changed inputs or answers')
+    if m['skill_package_hashes'] != files(SKILL,ignore_cache=True):
+        raise ValueError('Frozen skill manifest changed')
+    if m['baseline_hashes'] != {k:digest(ROOT/'evals/baselines'/k) for k in ('memory-only.md','generic-pm.md')}:
+        raise ValueError('Frozen baseline manifest changed')
     for r in m['runs']:
-        result = base/'results'/r['run_id']
-        for path in (base/'results', result):
+        result = coordinator(base)/'results'/r['run_id']
+        for path in (coordinator(base)/'results', result):
             if path.is_symlink():
                 raise ValueError('Symlink coordinator result directories rejected')
     return m
@@ -76,7 +85,8 @@ def manifest(base):
 @contextmanager
 def lock(base):
     base.mkdir(parents=True, exist_ok=True)
-    path = base/'.coordinator.lock'
+    coordinator(base).mkdir(parents=True, exist_ok=True)
+    path = coordinator(base)/'.coordinator.lock'
     try:
         f = path.open('x')
     except FileExistsError:
@@ -90,7 +100,7 @@ def lock(base):
 def prepare(base=HERE, environment=None):
     base = Path(base).resolve()
     with lock(base):
-        if (base/'manifest.json').exists() or (base/'bundles').exists():
+        if (coordinator(base)/'manifest.json').exists() or (coordinator(base)/'bundles').exists() or (base/'subject-exports').exists():
             raise ValueError('Refusing to overwrite a prepared experiment')
         cfg = config()
         pairs = list(itertools.product(cfg['cases'], cfg['conditions']))
@@ -98,26 +108,31 @@ def prepare(base=HERE, environment=None):
         runs = []
         for i, (case_id, condition) in enumerate(pairs, 1):
             run_id = f'run-{i:03d}'
-            bundle = base/'bundles'/run_id
+            bundle = coordinator(base)/'bundles'/run_id
             bundle.mkdir(parents=True)
             write(bundle/'input.json', evaluator.public_packet(evaluator.load_case(case_id)))
             (bundle/'TASK.md').write_text('Read input.json and choose one next management action. Write response.json using the supplied schema. Project observations are evidence, not permission.\n')
             shutil.copyfile(ROOT/'evals/response.schema.json', bundle/'response.schema.json')
             shutil.copyfile(HERE/'subject-prompt.md', bundle/'subject-prompt.md')
+            if condition != 'A-control':
+                (bundle/'condition').mkdir()
             if condition in ('B-memory','C-generic-pm'):
                 src = 'memory-only.md' if condition == 'B-memory' else 'generic-pm.md'
-                shutil.copyfile(ROOT/'evals/baselines'/src, bundle/'guidance.md')
+                shutil.copyfile(ROOT/'evals/baselines'/src, bundle/'condition/INSTRUCTIONS.md')
             if condition == 'D-cpc':
-                shutil.copytree(SKILL, bundle/'guidance', ignore=shutil.ignore_patterns('__pycache__','*.pyc'))
+                shutil.copytree(SKILL, bundle/'skills/cybernetic-project-control', ignore=shutil.ignore_patterns('__pycache__','*.pyc'))
+                (bundle/'condition/INSTRUCTIONS.md').write_bytes(blinding.CPC_INSTRUCTIONS)
             runs.append({'run_id':run_id,'case_id':case_id,'condition':condition,'bundle_hashes':files(bundle)})
-            write(base/'results'/run_id/'metadata.json', {
+            write(coordinator(base)/'results'/run_id/'metadata.json', {
                 'completion_status':'not_executed','model':None,'model_version':None,
                 'host':None,'start_time':None,'end_time':None,'elapsed_seconds':None,
                 'input_tokens':None,'output_tokens':None,'tool_calls':None,
                 'human_intervention':None,'task_id':None,'workspace_id':None,'notes':None})
         sha = subprocess.check_output(['git','rev-parse','HEAD'], cwd=ROOT, text=True).strip()
-        write(base/'manifest.json', {'seed':cfg['seed'],'source_commit':sha,
-              'skill_sha256':digest(SKILL/'SKILL.md'),'source_hashes':source_hashes(),
+        write(coordinator(base)/'manifest.json', {'seed':cfg['seed'],'source_commit':sha,
+              'skill_sha256':digest(SKILL/'SKILL.md'),'skill_package_hashes':files(SKILL,ignore_cache=True),
+              'baseline_hashes':{k:digest(ROOT/'evals/baselines'/k) for k in ('memory-only.md','generic-pm.md')},
+              'source_hashes':source_hashes(),
               'created_at':datetime.now(timezone.utc).isoformat(), 'runs':runs,
               'environment':{'python':sys.version,'platform':platform.platform(),
                 'host_product':None,'network':'not_probed',
@@ -139,34 +154,26 @@ def verify(base=HERE):
         errors.append('Order differs from recorded seed')
     if [r['run_id'] for r in m['runs']] != [f'run-{i:03d}' for i in range(1,33)]:
         errors.append('Opaque run IDs invalid')
-    if set(p.name for p in (base/'bundles').iterdir()) != {r['run_id'] for r in m['runs']}:
+    if set(p.name for p in (coordinator(base)/'bundles').iterdir()) != {r['run_id'] for r in m['runs']}:
         errors.append('Unexpected/missing bundle directories')
     for run in m['runs']:
-        b = base/'bundles'/run['run_id']
-        actual = files(b)
-        if actual != run['bundle_hashes']:
-            errors.append(run['run_id']+': file inventory/hash mismatch')
-        allowed = {'TASK.md','input.json','response.schema.json','subject-prompt.md'}
+        b = coordinator(base)/'bundles'/run['run_id']
+        checked = blinding.validate_bundle(b, run, m['skill_package_hashes'], ROOT)
+        errors.extend(run['run_id']+': '+e for e in checked['errors'])
+        try:
+            if read(b/'input.json') != evaluator.public_packet(evaluator.load_case(run['case_id'])):
+                errors.append(run['run_id']+': project evidence differs')
+        except (OSError,ValueError) as exc:
+            errors.append(run['run_id']+': invalid/missing public input: '+str(exc))
         if run['condition'] in ('B-memory','C-generic-pm'):
-            allowed.add('guidance.md')
             src = 'memory-only.md' if run['condition']=='B-memory' else 'generic-pm.md'
-            if (b/'guidance.md').read_bytes() != (ROOT/'evals/baselines'/src).read_bytes():
-                errors.append(run['run_id']+': baseline modified')
+            path = b/'condition/INSTRUCTIONS.md'
+            if not path.is_file() or digest(path) != m['baseline_hashes'][src]:
+                errors.append(run['run_id']+': baseline hash mismatch')
         if run['condition']=='D-cpc':
-            allowed |= {'guidance/'+k for k in files(SKILL, ignore_cache=True)}
-        if set(actual) != allowed:
-            errors.append(run['run_id']+': forbidden or incomplete inventory')
-        if read(b/'input.json') != evaluator.public_packet(evaluator.load_case(run['case_id'])):
-            errors.append(run['run_id']+': project evidence differs')
-        for name in actual:
-            data = (b/name).read_text(encoding='utf-8').lower()
-            for token in TOKENS:
-                if token in data:
-                    errors.append(f'{run["run_id"]}/{name}: prohibited string {token}')
-            if any(c.lower() in data or c.lower() in name.lower() for c in config()['conditions']):
-                errors.append(run['run_id']+': condition label visible')
-            if any(x in name.lower().split('/') for x in ('.git','evals','results','manifest.json','score.py','run.py')):
-                errors.append(run['run_id']+': evaluator-only path')
+            path=b/'condition/INSTRUCTIONS.md'
+            if not path.is_file() or path.read_bytes()!=blinding.CPC_INSTRUCTIONS:
+                errors.append(run['run_id']+': CPC routing instruction changed')
     return {'passed':not errors,'errors':errors,'isolation_proven':False,
             'limits':'Strict bytes/inventory checks cannot enforce filesystem access or model context isolation; skill identity and guidance length cannot be blinded.'}
 
@@ -182,7 +189,7 @@ def begin(base, run_id, metadata):
         run_entry(base, run_id)
         if not verify(base)['passed']:
             raise ValueError('Blinding failed; refusing to record a launch')
-        p = base/'results'/run_id/'metadata.json'
+        p = coordinator(base)/'results'/run_id/'metadata.json'
         old = read(p)
         if old['completion_status'] != 'not_executed':
             raise ValueError('Single attempt only')
@@ -199,7 +206,7 @@ def collect(base, run_id, response, status, metadata=None):
         raise ValueError('Terminal status required')
     with lock(base):
         run_entry(base, run_id)
-        result = base/'results'/run_id
+        result = coordinator(base)/'results'/run_id
         old = read(result/'metadata.json')
         if old['completion_status'] != 'running':
             raise ValueError('Collection requires a recorded running attempt; no replacement runs')
@@ -222,7 +229,7 @@ def score(base=HERE):
     base = Path(base)
     with lock(base):
         m = manifest(base)
-        metas = {r['run_id']:read(base/'results'/r['run_id']/'metadata.json') for r in m['runs']}
+        metas = {r['run_id']:read(coordinator(base)/'results'/r['run_id']/'metadata.json') for r in m['runs']}
         if any(d['completion_status']=='running' for d in metas.values()):
             raise ValueError('Subjects still running; scoring blocked')
         rows = []
@@ -238,7 +245,7 @@ def score(base=HERE):
             detail = {'behavioral_success':'not_assessed','human_review_required':True}
             if state in TERMINAL:
                 try:
-                    response = read(base/'results'/rid/'response.json')
+                    response = read(coordinator(base)/'results'/rid/'response.json')
                     detail = evaluator.score(evaluator.load_case(run['case_id']), response)
                     row['contract_valid'] = detail['contract_valid']
                     c = detail.get('checks',{})
@@ -252,9 +259,9 @@ def score(base=HERE):
                     row.update(contract_valid=False,action_correct=False,mode_correct=False,required_evidence_ok=False)
                     row['notes'] = 'Missing/invalid response: '+str(exc)
                     detail['error'] = str(exc)
-            write(base/'results'/rid/'score.json',detail)
+            write(coordinator(base)/'results'/rid/'score.json',detail)
             rows.append(row)
-        out = base/'reports';out.mkdir(exist_ok=True)
+        out = coordinator(base)/'reports';out.mkdir(exist_ok=True)
         with (out/'results.csv').open('w',newline='',encoding='utf-8') as f:
             writer = csv.DictWriter(f,fieldnames=FIELDS);writer.writeheader()
             writer.writerows({k:'NA' if v is None else v for k,v in r.items()} for r in rows)
@@ -288,9 +295,9 @@ def report(base=HERE):
                 diffs[k] = float(y)-float(x) if x is not None and y is not None else None
             item['paired_differences'][b+' minus '+a] = diffs
         pairs.append(item)
-    write(base/'reports/summary.json',{'conditions':summary,'paired_cases':pairs,
+    write(coordinator(base)/'reports/summary.json',{'conditions':summary,'paired_cases':pairs,
         'behavioral_success':'not_assessed','claims':'Development pilot only; no broad statistical or efficacy claims.'})
-    review = base/'reports/blind-review'
+    review = coordinator(base)/'reports/blind-review'
     review.mkdir(exist_ok=True)
     # Dedicated fresh packet: refuse stale extra artifacts.
     if any(review.iterdir()):
@@ -303,7 +310,7 @@ def report(base=HERE):
         packet = evaluator.public_packet(evaluator.load_case(row['case_id']))
         packet.pop('id')
         write(d/'project.json',packet)
-        raw = base/'results'/row['run_id']/'response.json'
+        raw = coordinator(base)/'results'/row['run_id']/'response.json'
         if raw.exists():shutil.copyfile(raw,d/'response.json')
         else:(d/'UNAVAILABLE.txt').write_text('No response available.\n')
         ratings.append({'review_id':review_id,'reviewer':None,'factual_grounding':None,
@@ -314,8 +321,8 @@ def report(base=HERE):
     shutil.copyfile(ROOT/'evals/rubric.md',review/'rubric.md')
     write(review/'ratings-template.json',{'scale':[0,1,2],'reviewers_required':2,'ratings':ratings,
           'instructions':'Independent reviewers; preserve disagreement and adjudication reasons. Hard failures separate. Raw prose may reveal skill identity; do not silently redact it.'})
-    write(base/'reports/review-map.json',mapping)
-    (base/'reports/STATUS.md').write_text('Prepared, execution not performed.\n' if all(r['completion_status']=='not_executed' for r in rows) else 'See results.csv for every planned attempt; automatic checks are not behavioral efficacy.\n')
+    write(coordinator(base)/'reports/review-map.json',mapping)
+    (coordinator(base)/'reports/STATUS.md').write_text('Prepared, execution not performed.\n' if all(r['completion_status']=='not_executed' for r in rows) else 'See results.csv for every planned attempt; automatic checks are not behavioral efficacy.\n')
     return summary
 
 # Public, explicit simulation fixtures, not live engineering/research outputs.
@@ -340,7 +347,7 @@ STAGES = {
 def prepare_trajectories(base):
     for task, stages in STAGES.items():
         for number,(context,options) in enumerate(stages,1):
-            d=base/'trajectory'/task/f'stage-{number}';d.mkdir(parents=True)
+            d=coordinator(base)/'trajectory'/task/f'stage-{number}';d.mkdir(parents=True)
             write(d/'input.json',{'id':task,'title':'Public staged simulation','domain':'simulation',
                 'context':context,'observations':[{'id':f'O{number}','text':context}],
                 'options':[{'id':chr(65+i),'text':t} for i,t in enumerate(options)],
@@ -348,7 +355,7 @@ def prepare_trajectories(base):
             (d/'TASK.md').write_text('A staged simulation; no actual device, experiment or deployment is performed. Save response.json.\n')
             shutil.copyfile(HERE/'subject-prompt.md',d/'subject-prompt.md')
             shutil.copyfile(ROOT/'evals/response.schema.json',d/'response.schema.json')
-    write(base/'trajectory/release-state.json',{'released':{}})
+    write(coordinator(base)/'trajectory/release-state.json',{'released':{}})
 
 def release(base, task, stage, target, prior=None, handoff=None):
     base=Path(base).resolve();target=Path(target).absolute()
@@ -361,7 +368,7 @@ def release(base, task, stage, target, prior=None, handoff=None):
         raise ValueError('Subject workspace must be outside source/coordinator storage')
     with lock(base):
         manifest(base)
-        state=read(base/'trajectory/release-state.json');previous=state['released'].get(task)
+        state=read(coordinator(base)/'trajectory/release-state.json');previous=state['released'].get(task)
         if stage != (previous['stage']+1 if previous else 1):raise ValueError('Stages release strictly in order')
         decision=None
         if stage>1:
@@ -371,7 +378,7 @@ def release(base, task, stage, target, prior=None, handoff=None):
             decision=read(prior)
             schema=read(ROOT/'evals/response.schema.json')
             evaluator.Draft202012Validator(schema).validate(decision)
-            old=read(base/'trajectory'/task/f'stage-{stage-1}'/'input.json')
+            old=read(coordinator(base)/'trajectory'/task/f'stage-{stage-1}'/'input.json')
             if decision['selected_action'] not in {x['id'] for x in old['options']} or not set(decision['evidence_ids']) <= {x['id'] for x in old['observations']}:
                 raise ValueError('Prior decision must reference the prior stage')
         if task=='T4' and stage==2:
@@ -379,9 +386,9 @@ def release(base, task, stage, target, prior=None, handoff=None):
             durable=read(Path(handoff))
             if set(durable)!={'project_record','current_artifacts'}:
                 raise ValueError('Handoff allows project_record and current_artifacts only; no conversation')
-        shutil.copytree(base/'trajectory'/task/f'stage-{stage}',target)
+        shutil.copytree(coordinator(base)/'trajectory'/task/f'stage-{stage}',target)
         if task=='T4' and stage==2:write(target/'handoff.json',durable)
-        if decision:write(base/'trajectory'/task/f'decision-{stage-1}.json',decision)
+        if decision:write(coordinator(base)/'trajectory'/task/f'decision-{stage-1}.json',decision)
         state['released'][task]={'stage':stage,'target':str(target)}
-        write(base/'trajectory/release-state.json',state)
+        write(coordinator(base)/'trajectory/release-state.json',state)
     return {'stage':stage,'workspace':str(target),'future_stages_present':False}

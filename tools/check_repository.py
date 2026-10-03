@@ -21,7 +21,7 @@ def repository_files(root: Path):
         if any(part in excluded for part in rel.parts):continue
         if rel.parts[:2] == ('experiments','codex-pilot-01'):
             if rel.name in {'manifest.json','.coordinator.lock'}:continue
-            if len(rel.parts)>2 and rel.parts[2] in {'bundles','trajectory','results','reports'}:continue
+            if len(rel.parts)>2 and rel.parts[2] in {'bundles','trajectory','results','reports','coordinator','subject-exports'}:continue
         if rel.parts[:2] == ('evals','runs'):continue
         if rel.parts[:2] == ('evals','private') and rel.parts != ('evals','private','README.md'):continue
         if path.is_file():yield path

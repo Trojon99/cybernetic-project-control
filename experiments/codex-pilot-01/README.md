@@ -1,81 +1,72 @@
 # Codex Pilot 0.1（协调者工具）
 
-本目录准备 CPC 的首个受控评估，复用 `evals/run.py` 的 `public_packet` 与 `score`，不是第二套评分系统。**当前仅准备，实际受测运行数为 0。** 不可把本目录、源仓库或 manifest 给受测者。
+本目录复用 `evals/run.py` 的 public_packet/score，准备受控 CPC 评估。**真实模型运行为 0**，不自动启动任务；本目录、源仓库和协调者数据均不可提供给受测者。
 
 ## 冻结设计
 
-使用 E02、E05、E07、E10、E17、E19、E24、E25，四个条件 A-control / B-memory / C-generic-pm / D-cpc，每个配对一个独立运行，共 32 个、每个只尝试一次。固定随机种子 20261003；随机顺序记录于协调者 manifest，编号 run-001 至 run-032 不包含条件。
+案例仍为 E02、E05、E07、E10、E17、E19、E24、E25。A 无 PM 指导；B 原 memory-only baseline；C 原 strong generic-PM baseline；D 完整 CPC 包。8 × 4 = 32 个独立运行，每个只尝试一次；随机 seed 20261003，run-001 至 run-032 与之前顺序一致。案例、oracle、Skill、两份 baseline、schema、实验问题和 subject-prompt.md 均未修改。
 
-A 无指导；B/C 原样复制现有 baseline；D 原样复制完整 CPC 包（排除解释器缓存）。每个 bundle 的 TASK、schema 和主提示词相同，同一案例的可见输入相同。按要求保留 public_packet 的案例 ID；不声称公开案例身份已隐藏。包自身名称/文风与长度可能使受测者推断条件，这是干预无法完全盲化的局限。不得隐藏不利回答或通过修改基线/答案来提高 CPC 分数。
+默认共同预算 600 秒、40 tool calls、4096 输出 tokens。真实执行时冻结同一模型/版本、reasoning/tools/system instructions 与预算；平台未暴露的参数/用量保持 null。Skill 名称、内容/长度可能让受测者推断干预，不能宣称完全干预盲化；公开案例 ID 按 public_packet 保留。相同提示词内已有若干 CPC 相似原则，可能缩小组间差异，按要求不改写。
 
-默认共同预算：600 秒、40 次工具调用、4096 输出 token。模型/版本、推理配置、上下文预算、温度与模型 seed 均待真正执行平台冻结，不用伪造值填充；配置中 null 表示未知。启动前必须记录能落实的相同设置，保留所有超时、错误和人工介入。若平台不能落实预算，记录偏差，不能将其隐去。Pilot 的主提示词本身包含若干 CPC 相似原则，可能减少组间差异；按用户要求不改写它。
+## 文件边界与新的验证规则
 
-## 严格扫描的真实冲突
+```text
+coordinator/                 # 私有协调者树，忽略提交
+  manifest.json              # opaque ID → case → condition，来源哈希
+  bundles/run-NNN/           # 生成前审核材料，不整树发给 worker
+  results/                   # 只接收终止后的真实 response.json
+  reports/                   # CSV、paired summary、人工盲评
+  trajectory/                # future stages，不能挂载给 worker
+  export-manifest.json       # 每归档 SHA-256，解压验证结果
+  export-checksums.sha256
+subject-exports/             # 仅 32 个 opaque tar.gz，忽略提交
+  run-001.tar.gz … run-032.tar.gz
+```
 
-用户要求逐字保留的 subject-prompt.md 第 3 条含 `oracle`；完整 CPC 包 references/04-feedback-and-replan.md 也含 `eval oracle`。因此字面禁止任何 `oracle` 的规则会阻止 **全部 32 个 bundle**（共 40 处文件级命中）。当前保留两份原文，验证如实失败，`begin` 拒绝启动。没有擅自添加扫描豁免或修改 Skill。必须由实验所有者明确解决这个规格冲突后才能启动；不得把这些说明文字当作真的泄露了答案，也不得把失败写成通过。
+A 仅 TASK.md、input.json、response.schema.json、subject-prompt.md。B/C 增加 condition/INSTRUCTIONS.md，字节和冻结 baseline SHA-256 完全一致。D 增加相同中性路径的 instruction（指向 Skill），以及完整 skills/cybernetic-project-control/；逐文件哈希与协调者记录的 frozen package manifest 相符，包含 references/assets/scripts/requirements/LICENSE，排除解释器缓存。不使用 A/B/C/D 标签作 subject 目录名。
 
-扫描还核对精确文件清单、文件哈希、可见输入、两份 baseline 和完整包，拒绝符号链接、额外文件及评估路径。扫描不能证明 OS 沙箱、模型上下文隔离、外部网络禁用或训练数据未见过公开案例。
+**lexical occurrence != answer leakage**：普通 “do not search for the oracle” 及 Skill 方法警告不泄露答案。验证器递归解析 JSON，拒绝 oracle/acceptable_actions/forbidden_actions/human_review_note **键**（包括嵌套、Unicode 转义）；对文本拒绝显式序列化答案结构和 evaluator-only 路径，不禁止孤立的普通英文词。独立文件/目录 allowlist 和冻结 SHA-256 拒绝任何额外材料、prior response、其他 run、Git、scorer 或被篡改允许文件。不是仅列几个坏词。
 
-## 当前主机与隔离判定
+每个 tar.gz 只含该 run 的允许文件，没有 outer run 目录、source path、ownership/timestamps、Git 或 mapping。每个归档在新的临时目录解压，用**同一验证器**重验；checksum 全留在 coordinator，不插入 payload。提取工具拒绝绝对路径、穿越、重复条目、链接、非普通文件、PAX metadata 和过大内容。归档验证不能证明外部文件系统、上下文或工具隔离。
 
-Codex desktop 暴露 fresh task 和 fork/sub-agent 能力；这并不能强制每个受测任务只读一个 bundle。这里的工具/文件权限可访问源仓库、父目录和其他运行；协作者共享文件系统。fresh context 或独立目录本身不够。因此不调用受测子代理、不用协调者上下文模拟 A/B/C/D、不创建假 task ID。沙箱中 GitHub DNS 不通，获得批准的克隆成功，网络不能简单标为“完全禁用”。本地 manifest 记录真实源 SHA、Skill SHA-256、Python 和平台；不提交本地环境数据。
+## 准备、导出与核验
 
-## 准备与验证
-
-从仓库根运行 Python 3.11+（本轮使用本地 .venv 的 3.12）：
+Python 3.11+；从 repository 根运行：
 
 ```bash
 .venv/bin/python experiments/codex-pilot-01/prepare.py
 .venv/bin/python experiments/codex-pilot-01/verify_blinding.py
-.venv/bin/python experiments/codex-pilot-01/report.py
+.venv/bin/python experiments/codex-pilot-01/export_subjects.py
+.venv/bin/python experiments/codex-pilot-01/verify_blinding.py --exports
 ```
 
-prepare 拒绝覆盖现有实验。manifest、bundles、轨迹未来阶段、原始结果与报告均忽略提交。report 生成包含全部 32 行的 reports/results.csv、summary.json、STATUS.md、blind-review/ 和协调者专用 review-map.json。当前严格验证预期退出 1；报告可以记录未执行状态，不能据此启动。重复 report 前将已有 blind-review 包移到独立存档位置，避免覆盖已审阅材料。
+prepare/export 拒绝覆盖。需要独立新准备可给所有命令相同 --root /private/tmp/cpc-preparation-new；这个参数是包含 coordinator/ 和 subject-exports/ 的存储根，不是直接 coordinator 目录。旧 384972c 本地准备材料在 coordinator/previous-preparation-384972c/ 保留，不被当作当前运行结果。
 
-## 真正执行时的精确操作
+source commit、Skill SHA-256、完整技能/基线/输入/工具哈希和真实主机信息记在忽略提交的 coordinator/manifest.json。来源变化阻止继续评估，不能看到结果后悄悄换答案。网络与 host 能力未知时使用 not_probed/not_assessed，可通过 prepare.py --environment 提供真实操作员观察。
 
-1. 在**另外的隔离 Codex 执行平台**选定并冻结同一模型/版本、工具、系统指令、推理配置与预算。禁止自动挂载全局技能、memory、联网及其他项目。单独设置 OS 用户/容器或等价强制访问控制：每个 worker 的根仅含一个 bundle，无法读协调者树、父目录、源仓库、其他 worker 或结果。部署前用实际权限探测验证拒绝这些路径，并记录证据。只写本 worker 的 response.json；网络关闭。提示词限制不能代替这个控制。
-2. 先解决严格扫描冲突，运行 verify 并要求退出 0。按 manifest 的 run 顺序逐个复制**仅** bundles/run-NNN 的内容到新 worker 根；不要复制 manifest、condition 目录、协调者代码或 Git 元数据。每次创建全新模型上下文；提交 bundle 内 subject-prompt.md 的逐字文本。一个任务只见一个案例/条件。此 harness 不提供假装可落实沙箱的自动启动器。
-3. 平台真正启动后，将真实元数据写在协调者侧 begin.json：必须包含 model、host、start_time（ISO 时间）、task_id、workspace_id、isolation_evidence 与 budget；可包含 model_version、推理参数。用以下命令记账（这不是启动工具）：
+## 真正执行的必要 gate
 
-```bash
-.venv/bin/python experiments/codex-pilot-01/collect.py begin --run run-001 --metadata /coordinator/begin.json
-```
+遵循 [ISOLATION.md](ISOLATION.md) 的 context/filesystem/history/network/result 五种隔离和 [CODEX-CLOUD-RUNBOOK.md](CODEX-CLOUD-RUNBOOK.md)。当前 desktop task 工具不能强制每个 worker 只读单包；独立 task 或 context 本身不够。新的 exports 解决了交付材料混杂问题，**没有**声称本地或云端强制隔离已成立。
 
-4. 确认该任务终止后，收集**仅** response.json。end.json 可记录平台实际暴露的 end_time、elapsed_seconds、input_tokens、output_tokens、tool_calls、human_intervention 和 notes。未暴露项保留 null。失败/超时也必须调用 finish，不删行、不重试：
+未来每个 Cloud task 只接收一个解压包，不附加 CPC source repository，不读 Git/oracle/scorer/coordinator/他组结果；网络和其他外部工具关闭，同一模型/推理设置。先用非计分 fresh sacrificial task 列举所有可读 workspace 文件/哈希并核对外部读通道；与管理员的 mount/cache/tool 审计一起通过才可启动。官方文档没有证明本账号支持 archive-only/no-repository 导入，本 runbook 明确对此保留平台 gate。这一轮不执行 probe 或 32 个任务。
 
-```bash
-.venv/bin/python experiments/codex-pilot-01/collect.py finish --run run-001 --status completed --subject-stopped --response /isolated/run-001/response.json --metadata /coordinator/end.json
-# 没有响应的失败：
-.venv/bin/python experiments/codex-pilot-01/collect.py finish --run run-002 --status timeout --subject-stopped --metadata /coordinator/end-002.json
-```
+## 收集、评分与人工盲评
 
-5. 所有 worker 停止并完成记账后运行 score.py / report.py。生命周期检查和协调者锁是合作式约束，不是进程沙箱；外部执行平台负责真实终止与隔离。score 永远不打开 subject workspace，只读已复制结果；running 状态阻止评分。来源哈希变化阻止评分，不更改 oracle。任何已尝试但缺失/非法响应的运行计失败；未执行的运行保留 NA。完成状态、契约指标和实际行为评分独立展示。
+未来实际启动后用 collect.py begin --run run-NNN --metadata /coordinator/begin-NNN.json 记账；必须提供真实模型/host/start/task/workspace/isolation/budget。任务停止后 collect.py finish --run run-NNN --status completed --subject-stopped --response /download/run-NNN/response.json --metadata /coordinator/end-NNN.json。失败/超时没有 response 时省略 --response，保留失败，不选择性重试。
 
-## 人工盲评与分析
+score.py/report.py 只读 coordinator/results/，running 状态阻止评分。缺失/非法响应是失败，未执行保持 NA；行为成功保留 not_assessed，自动契约得分不判断 prose 或实际管理正确性。报告给全部 32 行、每组计数/已尝试分母/比例、逐案例所有组间差、失败和可用资源差；没有数据不捏造零用量。report 重复运行前须把旧 blind-review 包移到独立存档，防止覆盖人评。
 
-只把 reports/blind-review/ 给两名独立评审；不要给 summary、results.csv、review-map 或 manifest。每个随机 review 编号附相同案例证据和原始响应，无条件或主机元数据。评审按现有 evals/rubric.md 的五项 0–2 打分，ratings-template.json 单列六类 hard failure，包含严重漏升级。保留分歧和裁决理由。原始 prose 若自行提及 CPC 会泄露身份，应记录盲评局限，不静默删改。
+只给两名独立评审 coordinator/reports/blind-review/，隐藏 condition/model/host/mapping；复用现有 rubric 五项 0–2，六类 hard failure 独立记录，包含严重漏升级。保留分歧与裁决理由，响应自称 CPC 等盲评局限如实记录，不静默删改。人工评分模板不是已完成的评分。
 
-自动评分保留 behavioral_success = not_assessed；invalid schema 的选择检查计失败，无法解析的发明证据/违规行为保留 NA。明确引用不存在 ID 可标 hard_failure；自动 forbidden_action 是案例选择禁止项，不直接推断真实破坏性行为。summary 给所有组原始计数、已尝试分母、比例、逐案例所有组间配对差、失败列表及可用时间/token 差；资源均值显示有数据的样本数。未运行时不会填虚构的成功率或资源零值。人工评分模板供后续独立审查，不自动冒充人评结果。
+## 轨迹准备
 
-## 四个轨迹环境（仅准备）
+T1 科研校准撤回/恢复，T2 集成/延迟/过期结果，T3 小修复/验收/停止，T4 durable-record 接力/版本变化，每个三阶段，均是明确的 deterministic simulation 材料，非真实工程/科研执行。future stages 只保存在 coordinator/trajectory/。
 
-trajectory/ 是**协调者私有存储**，T1 科研校准撤回/部分恢复，T2 接口变化/过期延迟反馈，T3 两项小修复/验收/停止，T4 接力/记录版本变化。每个三阶段，输入明确标作确定性模拟材料；它们没有真的运行科研、设备或交付任务，也不提供新的 oracle。当前机制只模拟事件释放，不验证真正执行产物，不能据此声称 trajectory efficacy。
+release_stage.py --task T1 --stage 1 --target /private/tmp/cpc-T1-stage1 只复制一个阶段到新的外部 workspace。后续阶段须 --prior /coordinator/T1/response.json --prior-subject-stopped，检查已保存决策后严格顺序释放。旧 workspace 必须撤销读权限，不能让 worker 读整个 trajectory tree。T4 stage 2 使用新的 Agent B context，仅 --handoff 的 project_record/current_artifacts，绝不传 A 聊天/response；自由文字是否混入聊天由协调者人工核对。此工具不创建 worker，不证明 OS 隔离。
 
-release_stage.py 一次复制一个阶段到源仓库和协调者目录之外的新路径；后续阶段只有 prior decision 保存、schema 与动作/证据检查通过且操作者确认 worker 停止后才能释放。旧 workspace 必须撤销读取权限，再给同一轨迹 worker 绑定新阶段根；不要让 worker 读取 trajectory/。阶段序号严格递增，决策在协调者存档。阶段 1 示例：
+## 限制与工程验证
 
-```bash
-.venv/bin/python experiments/codex-pilot-01/release_stage.py --task T1 --stage 1 --target /private/tmp/cpc-T1-stage1
-.venv/bin/python experiments/codex-pilot-01/release_stage.py --task T1 --stage 2 --target /private/tmp/cpc-T1-stage2 --prior /coordinator/T1/response.json --prior-subject-stopped
-```
-
-T4 stage 2 必须启动**新的 Agent B 上下文**；不得转发 A 聊天、response 或推理。--handoff 的 JSON 只允许 project_record 与 current_artifacts 两个字段；由协调者人工核对其内容确实只有持久项目记录与当前产物，结构校验无法证明自由文字没有泄漏聊天。例如 `{ "project_record": {"revision":"r1"}, "current_artifacts": [{"revision":"r2"}] }`。同样的记录后端应跨条件保持相同。阶段 3 可继续 Agent B。此命令不创建 worker，也不证明 OS 隔离；轨迹执行仍需独立平台。
-
-## 证据边界
-
-公开案例是开发 fixtures，非私有 held-out benchmark。Pilot 只能检查管道行为及机制信号；结果不证明通用 Agent 改善。静态选择题弱于真正轨迹任务；同模型结果不能证明跨模型可移植。CPC 可能增加 token/时间成本，基线文本长度未匹配；如无 tokenizer/usage 就保持 unknown。好结果不能靠无必要等待或过度请求人类判断。命令成功、哈希、JSON 和本仓库工程单测均不证明科学有效性或真实权限。
-
-## 工程验证
+公开案例是开发 fixtures，不是私有 held-out benchmark；只能测管道行为/机制信号，不证明普遍改善。静态选择题弱于真实轨迹任务；同模型不能证明跨模型 portability；CPC 可能增加 token/时间，baseline 长度未匹配。好结果不能来自无必要等待/过度人类升级。文件哈希、JSON、命令成功、单测不能代替科学有效性、真实授权或 Agent efficacy。
 
 ```bash
 .venv/bin/python -m unittest discover -s tests -v
@@ -83,4 +74,4 @@ T4 stage 2 必须启动**新的 Agent B 上下文**；不得转发 A 聊天、re
 .venv/bin/python tools/demo.py
 ```
 
-新增测试覆盖 32 个配对包、基线/完整技能不变、确定性、opaque IDs、字段剥离、严格扫描冲突、注入文件、评分 running 防护、缺失响应保留、全部报告行、轨迹释放与接力边界。测试使用合成 lifecycle records，绝非受测 Agent 输出。
+回归覆盖普通 oracle 警告、嵌套答案键/文本结构、路径与任意额外条目、冻结 baseline/完整 Skill、32 exports 解压验证、确定性 tar/gzip、无 Git/他组文件，以及既有评分/缺失响应/轨迹边界。unit fixtures 只在临时目录测试工具，不作为真实受测结果或用于管道演示。当前实际结果目录没有 response.json。

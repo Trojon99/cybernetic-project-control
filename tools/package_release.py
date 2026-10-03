@@ -27,7 +27,7 @@ def include_path(relative: Path) -> bool:
     if len(parts) > 1 and parts[0] not in ROOT_DIRS:return False
     if parts[:2] == ('experiments','codex-pilot-01'):
         if relative.name in {'manifest.json','.coordinator.lock'}:return False
-        if len(parts)>2 and parts[2] in {'bundles','trajectory','results','reports'}:
+        if len(parts)>2 and parts[2] in {'bundles','trajectory','results','reports','coordinator','subject-exports'}:
             return len(parts)==4 and parts[2] in {'results','reports'} and parts[3]=='.gitkeep'
     if parts[:2] == ('evals','runs'):return False
     if parts[:2] == ('evals','private') and parts != ('evals','private','README.md'):return False

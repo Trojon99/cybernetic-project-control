@@ -1,0 +1,10 @@
+bundles/
+trajectory/
+manifest.json
+results/*
+!results/.gitkeep
+reports/*
+!reports/.gitkeep
+.coordinator.lock
+coordinator/
+subject-exports/

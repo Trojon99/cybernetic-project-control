@@ -26,3 +26,7 @@
 ## 不主张理论优越性
 
 没有在项目上识别出明确动力学、目标函数、约束和参数范围时，不推导最优控制律、能控/能观秩条件或稳定性保证。更严谨的 formal control 是未来特定子问题研究，不是本版标签。
+
+## Pilot harness integrity (D: experimental design, not source theory)
+
+The coordinator-only Codex Pilot 0.1 reuses the public-packet/scorer functions. Behaviors: freeze source/package hashes; prepare paired randomized minimal bundles; export one deterministic archive per subject; re-extract and validate JSON keys, serialized answer structures, evaluator paths and a strict file/directory allowlist; block scoring while a recorded subject is running. Limits: lexical occurrence is not answer leakage; cooperative lifecycle controls and exported bytes are not an OS/context/network sandbox. Test reference: `tests/test_codex_pilot.py` covers preserved baselines/package, seed order, malicious structures/paths/unexpected files, all 32 exports, safe extraction, running protection, missing-response accounting and stage separation. No deterministic test establishes CPC efficacy or independent worker execution. Cloud launch guidance is unexercised until a single-payload environment and sacrificial isolation probe meet the documented gates.

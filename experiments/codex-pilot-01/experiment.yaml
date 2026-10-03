@@ -1,0 +1,34 @@
+{
+  "version": "0.1",
+  "seed": 20261003,
+  "cases": [
+    "E02",
+    "E05",
+    "E07",
+    "E10",
+    "E17",
+    "E19",
+    "E24",
+    "E25"
+  ],
+  "conditions": [
+    "A-control",
+    "B-memory",
+    "C-generic-pm",
+    "D-cpc"
+  ],
+  "planned_runs": 32,
+  "budget": {
+    "wall_seconds": 600,
+    "tool_calls": 40,
+    "max_output_tokens": 4096,
+    "context_tokens": null
+  },
+  "model": null,
+  "reasoning_effort": null,
+  "temperature": null,
+  "model_seed": null,
+  "launch_policy": "No launch until identical model settings and filesystem/network isolation are enforced externally. One attempt per run; preserve failures; no selective retries.",
+  "human_reviewers": 2,
+  "primary_outcome": "limited automatic contract checks plus independent human rubric; behavioral_success remains not_assessed"
+}

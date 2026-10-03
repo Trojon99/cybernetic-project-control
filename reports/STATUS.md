@@ -38,3 +38,23 @@ Freeze a skill revision and run paired evaluations against:
 Measure decision quality, redundant work, delayed-feedback handling, coupling/interface errors, human-gate compliance, delivery cost and cross-agent handoff. Publish null or negative results as well as positive ones.
 
 中文要点：代码已经公开，但“工程测试通过”与“Agent 学会更好地管理项目”是两回事。后者仍需真实对照实验。
+
+## Pilot 0.1 execution status
+
+Verified on 2026-10-03:
+
+- Pilot 0.1 harness: **READY**
+- 32 blinded exports: **PASS**
+- Repository tests: **129 PASS**
+- Real isolation probes: **0**
+- Real scored runs: **0/32**
+- Efficacy: **NOT ASSESSED**
+- Real evaluation: **DEFERRED**
+
+**Reason:** No verified subscription-included execution environment currently guarantees single-bundle filesystem isolation from the CPC source repository and other runs.
+
+The subject-visible experiment is frozen at commit `b073cc8`. Passing deterministic tests and export validation establishes harness consistency, not CPC management efficacy. No API execution runner or separately billed OpenAI API / Agents API backend was added. Generated exports, coordinator metadata and private outputs remain local and excluded from Git.
+
+## Codex Pilot 0.1 preparation
+
+A coordinator-only [pilot harness](../experiments/codex-pilot-01/README.md) prepares 8 public cases × 4 conditions, frozen source hashes, randomized opaque bundles, subject-only exports, collection, limited scoring, blind human-review packets and staged simulation release. Structural/key/path/allowlist validation accepts methodological `oracle` warnings and rejects answer-bearing structures. Every export is re-extracted and verified. **No evaluated model runs or sacrificial probe have been executed.** Cloud integration remains guidance-only until the [isolation requirements](../experiments/codex-pilot-01/ISOLATION.md) are enforced and probed. Engineering tests validate only the harness.
